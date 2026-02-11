@@ -1,134 +1,696 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Ankit ❤️ Ruchi</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Dancing+Script:wght@700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --rose: #ff2d6b;
+      --blush: #ff8fab;
+      --cream: #fff0f5;
+      --gold: #ffd700;
+      --dark: #0a000f;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
-      background: black;
-      color: pink;
-      font-family: cursive;
-      text-align: center;
+      background: var(--dark);
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
       overflow-x: hidden;
+      cursor: none;
     }
 
-    video {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-    }
-
-    .teddies img {
-      width: 140px;
-      margin: 10px;
-    }
-
-    button {
-      padding: 12px 25px;
-      font-size: 18px;
-      background: hotpink;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    /* Popup */
-    .popup {
-      display: none;
+    /* ── Custom cursor ── */
+    #cursor {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      width: 22px; height: 22px;
+      background: var(--rose);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ── Canvas BG ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Sections ── */
+    .scene {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 40px 20px;
     }
 
-    .popup-content {
-      background: #111;
-      padding: 25px;
-      border-radius: 20px;
+    /* ── Hero ── */
+    #hero {
+      gap: 18px;
     }
 
-    #heart {
-      display: none;
-      font-size: 120px;
-      animation: pulse 1s infinite;
+    .date-tag {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      letter-spacing: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--blush);
+      opacity: 0;
+      animation: fadeUp 1s 0.3s forwards;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
+    .hero-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(52px, 10vw, 96px);
+      background: linear-gradient(135deg, #fff 0%, var(--blush) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeUp 1s 0.6s forwards;
     }
 
-    #message {
-      display: none;
+    .hero-sub {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(14px, 3vw, 20px);
+      color: var(--blush);
+      letter-spacing: 2px;
+      opacity: 0;
+      animation: fadeUp 1s 0.9s forwards;
+    }
+
+    .big-heart-btn {
+      margin-top: 10px;
+      font-size: 60px;
+      background: none;
+      border: none;
+      cursor: none;
+      animation: heartbeat 1.4s infinite ease-in-out, fadeUp 1s 1.2s both;
+      filter: drop-shadow(0 0 20px var(--rose));
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      animation: bounce 2s infinite;
+    }
+
+    /* ── Teddies ── */
+    #teddies-section { gap: 10px; }
+
+    .section-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(32px, 7vw, 58px);
+      color: var(--blush);
+      margin-bottom: 20px;
+    }
+
+    .bears-row {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .bear-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bear-emoji {
+      font-size: clamp(70px, 15vw, 120px);
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 10px 30px rgba(255,45,107,0.5));
+    }
+
+    .bear-card:nth-child(2) .bear-emoji { animation-delay: 1.5s; }
+
+    .bear-label {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    .heart-divider {
+      font-size: 28px;
+      animation: heartbeat 1s infinite;
+      align-self: center;
       margin-top: 20px;
-      font-size: 22px;
+    }
+
+    /* ── Countdown ── */
+    #countdown-section { gap: 14px; }
+
+    .countdown-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .cd-box {
+      background: rgba(255,45,107,0.08);
+      border: 1px solid rgba(255,45,107,0.3);
+      border-radius: 16px;
+      padding: 18px 24px;
+      min-width: 90px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cd-box:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,45,107,0.3); }
+
+    .cd-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--rose), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .cd-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--blush);
+      margin-top: 4px;
+    }
+
+    /* ── Memories ── */
+    #memories-section { gap: 16px; }
+
+    .memories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .memory-card {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .memory-card:hover { transform: scale(1.08) rotate(-2deg); }
+
+    .memory-card .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,45,107,0.6), rgba(255,215,0,0.3));
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Dancing Script', cursive;
+      font-size: 14px;
+      color: white;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .memory-card:hover .overlay { opacity: 1; }
+
+    /* ── Proposal ── */
+    #proposal-section { gap: 16px; }
+
+    .question-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 5vw, 38px);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 500px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .yes-btn, .no-btn {
+      padding: 14px 36px;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      cursor: none;
+      letter-spacing: 1px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+
+    .yes-btn {
+      background: linear-gradient(135deg, var(--rose), #c2185b);
+      color: white;
+      box-shadow: 0 0 30px rgba(255,45,107,0.5);
+    }
+
+    .yes-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px rgba(255,45,107,0.8); }
+
+    .no-btn {
+      background: rgba(255,255,255,0.07);
+      color: var(--blush);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* ── Celebration ── */
+    #celebration {
+      display: none;
+      gap: 20px;
+    }
+
+    .big-red-heart {
+      font-size: clamp(80px, 20vw, 160px);
+      animation: heartbeat 0.8s infinite;
+      filter: drop-shadow(0 0 40px red);
+    }
+
+    .love-message {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(15px, 3vw, 22px);
+      line-height: 2;
+      max-width: 520px;
+      text-align: center;
+      color: var(--cream);
+      opacity: 0;
+      animation: fadeUp 1.2s 0.4s forwards;
+    }
+
+    .love-message em { color: var(--gold); font-style: italic; }
+
+    .forever-tag {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(28px, 6vw, 52px);
+      background: linear-gradient(135deg, var(--rose), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp 1.2s 0.8s both;
+    }
+
+    /* ── Music player mock ── */
+    #music-bar {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10,0,15,0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,45,107,0.3);
+      border-radius: 50px;
+      padding: 10px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 100;
+      box-shadow: 0 8px 40px rgba(255,45,107,0.2);
+    }
+
+    .music-note { font-size: 20px; animation: spin 3s linear infinite; }
+    .music-label { font-size: 13px; color: var(--blush); font-family: 'Lato', sans-serif; }
+    .bars { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
+    .bar {
+      width: 4px;
+      background: var(--rose);
+      border-radius: 2px;
+      animation: equalize 0.6s infinite alternate;
+    }
+    .bar:nth-child(1) { height: 8px; animation-delay: 0s; }
+    .bar:nth-child(2) { height: 16px; animation-delay: 0.15s; }
+    .bar:nth-child(3) { height: 10px; animation-delay: 0.3s; }
+    .bar:nth-child(4) { height: 18px; animation-delay: 0.1s; }
+    .bar:nth-child(5) { height: 12px; animation-delay: 0.25s; }
+
+    /* ── Keyframes ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%       { transform: translateY(-18px) rotate(2deg); }
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.25); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(10px); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes equalize {
+      from { height: 4px; }
+      to   { height: 20px; }
+    }
+    @keyframes firework {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--fx), var(--fy)) scale(0); opacity: 0; }
+    }
+
+    .firework-particle {
+      position: fixed;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 200;
+      animation: firework 1s ease-out forwards;
+    }
+
+    /* ── Typewriter ── */
+    .typewriter { border-right: 2px solid var(--rose); white-space: nowrap; overflow: hidden; }
+
+    /* ── Glitter overlay ── */
+    .glitter {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,45,107,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255,215,0,0.05) 0%, transparent 50%);
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s, transform 0.8s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Mobile ── */
+    @media(max-width: 500px) {
+      .memories-grid { grid-template-columns: repeat(2, 1fr); }
+      .countdown-grid { gap: 12px; }
+      .cd-box { padding: 14px 18px; min-width: 70px; }
     }
   </style>
 </head>
-
 <body>
 
-<!-- 🎬 Video -->
-<video autoplay muted loop>
-  <source src="love.mp4" type="video/mp4">
-</video>
+<div id="cursor"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="glitter"></div>
 
-<h2>Happy Valentine’s Day 💖</h2>
+<!-- ━━━ HERO ━━━ -->
+<section class="scene" id="hero">
+  <p class="date-tag">14 February · Forever & Always</p>
+  <h1 class="hero-title">Ankit ❤️ Ruchi</h1>
+  <p class="hero-sub">Happy Valentine's Day, my love</p>
+  <button class="big-heart-btn" onclick="scrollTo({top: window.innerHeight, behavior:'smooth'})">💖</button>
+  <p class="scroll-hint">↓ scroll ↓</p>
+</section>
 
-<!-- 🧸 Teddies -->
-<div class="teddies">
-  <img src="teddy1.png">
-  <img src="teddy2.png">
-</div>
+<!-- ━━━ TEDDIES ━━━ -->
+<section class="scene" id="teddies-section">
+  <div class="reveal">
+    <p class="section-title">Just for you 🌹</p>
+    <div class="bears-row">
+      <div class="bear-card">
+        <div class="bear-emoji">🧸</div>
+        <div class="bear-label">Ankit</div>
+      </div>
+      <div class="heart-divider">💞</div>
+      <div class="bear-card">
+        <div class="bear-emoji">🧸</div>
+        <div class="bear-label">Ruchi</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<button onclick="openPopup()">Click Here 💌</button>
+<!-- ━━━ COUNTDOWN ━━━ -->
+<section class="scene" id="countdown-section">
+  <div class="reveal">
+    <p class="section-title">Time together ✨</p>
+    <p style="color:var(--blush);font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">
+      Counting every precious moment
+    </p>
+    <div class="countdown-grid">
+      <div class="cd-box"><span class="cd-number" id="cd-days">00</span><span class="cd-label">Days</span></div>
+      <div class="cd-box"><span class="cd-number" id="cd-hrs">00</span><span class="cd-label">Hours</span></div>
+      <div class="cd-box"><span class="cd-number" id="cd-min">00</span><span class="cd-label">Minutes</span></div>
+      <div class="cd-box"><span class="cd-number" id="cd-sec">00</span><span class="cd-label">Seconds</span></div>
+    </div>
+    <p style="color:rgba(255,255,255,0.25);font-size:11px;margin-top:16px;letter-spacing:2px;">
+      since our first Valentine's together
+    </p>
+  </div>
+</section>
 
-<!-- 💬 Popup -->
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <h2>Will you be my Valentine? 💕</h2>
-    <button onclick="yesClicked()">Yes 😍</button>
-    <button onclick="noClicked()" id="noBtn">No 🙈</button>
+<!-- ━━━ MEMORIES ━━━ -->
+<section class="scene" id="memories-section">
+  <div class="reveal">
+    <p class="section-title">Our Moments 📸</p>
+    <div class="memories-grid">
+      <div class="memory-card" style="background:rgba(255,45,107,0.12);">
+        🌅<div class="overlay">Our first sunrise together 🌸</div>
+      </div>
+      <div class="memory-card" style="background:rgba(255,215,0,0.08);">
+        🎂<div class="overlay">Every birthday feels magical 🎉</div>
+      </div>
+      <div class="memory-card" style="background:rgba(100,50,255,0.1);">
+        🌙<div class="overlay">Late night talks till 3am 🌙</div>
+      </div>
+      <div class="memory-card" style="background:rgba(255,120,50,0.1);">
+        🍕<div class="overlay">Pizza dates are the best dates 😍</div>
+      </div>
+      <div class="memory-card" style="background:rgba(50,200,100,0.08);">
+        💌<div class="overlay">Every text made my heart race 💓</div>
+      </div>
+      <div class="memory-card" style="background:rgba(255,45,107,0.15);">
+        🌹<div class="overlay">You're my favourite everything ❤️</div>
+      </div>
+    </div>
+    <p style="color:rgba(255,255,255,0.3);font-size:11px;margin-top:14px;letter-spacing:2px;">hover the cards</p>
+  </div>
+</section>
+
+<!-- ━━━ PROPOSAL ━━━ -->
+<section class="scene" id="proposal-section">
+  <div class="reveal" style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+    <p class="section-title">The Question 💍</p>
+    <p class="question-text">
+      Ruchi… you are my calm in every storm, my smile in every dark day —<br>
+      <em style="color:var(--rose);">will you be my Valentine?</em>
+    </p>
+    <div class="btn-row">
+      <button class="yes-btn" onclick="celebrate()">Yes, always! 😍</button>
+      <button class="no-btn" id="no-btn" onmouseover="runAway(this)" ontouchstart="celebrate()">No 🙈</button>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━ CELEBRATION ━━━ -->
+<section class="scene" id="celebration">
+  <div class="big-red-heart">❤️</div>
+  <p class="love-message">
+    My dearest <em>Ruchi</em> 🌹<br>
+    From the very first moment you walked into my life,<br>
+    everything — <em>absolutely everything</em> — got better.<br><br>
+    You are my favourite notification, my warmest hug,<br>
+    my reason to smile at nothing.<br><br>
+    <em>Thank you for choosing me, every single day.</em><br><br>
+    I love you — endlessly, completely, forever 💍
+  </p>
+  <p class="forever-tag">Ankit ❤️ Ruchi — Forever 🌹</p>
+</section>
+
+<!-- ━━━ MUSIC BAR (shown after yes) ━━━ -->
+<div id="music-bar">
+  <span class="music-note">🎵</span>
+  <span class="music-label">Playing our song ♪</span>
+  <div class="bars">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
   </div>
 </div>
 
-<!-- ❤️ Heart -->
-<div id="heart">❤️</div>
-
-<!-- 💌 Message -->
-<div id="message">
-  My love ❤️<br><br>
-  You make my world brighter every day.<br>
-  I promise to love you, respect you, and annoy you forever 😄💍
-</div>
-
-<!-- 🎵 Music -->
-<audio id="song" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-function openPopup() {
-  document.getElementById("popup").style.display = "flex";
-}
+  // ── Custom cursor ──
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
 
-function yesClicked() {
-  document.getElementById("popup").style.display = "none";
-  document.getElementById("heart").style.display = "block";
-  document.getElementById("message").style.display = "block";
-  document.getElementById("song").play();
-}
+  // ── Canvas: floating hearts ──
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, hearts = [];
 
-function noClicked() {
-  // Cute trick 😄
-  yesClicked();
-}
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function randomHeart() {
+    return {
+      x: Math.random() * W,
+      y: H + 30,
+      size: 10 + Math.random() * 22,
+      speed: 0.4 + Math.random() * 1.2,
+      opacity: 0.08 + Math.random() * 0.18,
+      drift: (Math.random() - 0.5) * 0.6,
+      char: ['❤️','💕','💖','🌹','✨'][Math.floor(Math.random()*5)]
+    };
+  }
+
+  for(let i = 0; i < 18; i++) {
+    let h = randomHeart();
+    h.y = Math.random() * H;
+    hearts.push(h);
+  }
+
+  function drawHearts() {
+    ctx.clearRect(0, 0, W, H);
+    hearts.forEach(h => {
+      ctx.save();
+      ctx.globalAlpha = h.opacity;
+      ctx.font = h.size + 'px serif';
+      ctx.fillText(h.char, h.x, h.y);
+      ctx.restore();
+      h.y  -= h.speed;
+      h.x  += h.drift;
+      if(h.y < -50) Object.assign(h, randomHeart());
+    });
+    requestAnimationFrame(drawHearts);
+  }
+  drawHearts();
+
+  // ── Countdown: time since Valentine's Day last year ──
+  function updateCountdown() {
+    const start = new Date('2024-02-14T00:00:00');
+    const now   = new Date();
+    const diff  = Math.floor((now - start) / 1000);
+    const days  = Math.floor(diff / 86400);
+    const hrs   = Math.floor((diff % 86400) / 3600);
+    const mins  = Math.floor((diff % 3600) / 60);
+    const secs  = diff % 60;
+    document.getElementById('cd-days').textContent = String(days).padStart(3,'0');
+    document.getElementById('cd-hrs').textContent  = String(hrs).padStart(2,'0');
+    document.getElementById('cd-min').textContent  = String(mins).padStart(2,'0');
+    document.getElementById('cd-sec').textContent  = String(secs).padStart(2,'0');
+  }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // ── Scroll reveal ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.2 });
+  revealEls.forEach(el => obs.observe(el));
+
+  // ── No button runs away ──
+  function runAway(btn) {
+    const maxX = window.innerWidth  - 120;
+    const maxY = window.innerHeight - 60;
+    btn.style.position = 'fixed';
+    btn.style.left = Math.random() * maxX + 'px';
+    btn.style.top  = Math.random() * maxY + 'px';
+    btn.style.transition = 'left 0.3s, top 0.3s';
+    btn.style.zIndex = '50';
+  }
+
+  // ── Fireworks ──
+  function spawnFirework(cx, cy) {
+    const colors = ['#ff2d6b','#ffd700','#ff8fab','#fff','#ff69b4','#c084fc'];
+    for(let i = 0; i < 22; i++) {
+      const p = document.createElement('div');
+      p.classList.add('firework-particle');
+      const angle = (i / 22) * Math.PI * 2;
+      const dist  = 60 + Math.random() * 80;
+      p.style.setProperty('--fx', Math.cos(angle)*dist + 'px');
+      p.style.setProperty('--fy', Math.sin(angle)*dist + 'px');
+      p.style.left = cx + 'px';
+      p.style.top  = cy + 'px';
+      p.style.background = colors[i % colors.length];
+      p.style.animationDuration = (0.7 + Math.random() * 0.6) + 's';
+      document.body.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+
+  function multiFireworks() {
+    let count = 0;
+    const iv = setInterval(() => {
+      spawnFirework(Math.random() * window.innerWidth, Math.random() * window.innerHeight * 0.6);
+      if(++count > 12) clearInterval(iv);
+    }, 220);
+  }
+
+  // ── Celebrate ──
+  function celebrate() {
+    // Remove no-button so it can't be pressed
+    const noBtn = document.getElementById('no-btn');
+    if(noBtn) noBtn.remove();
+
+    // Show celebration
+    const cel = document.getElementById('celebration');
+    cel.style.display = 'flex';
+    cel.scrollIntoView({ behavior: 'smooth' });
+
+    // Fireworks
+    setTimeout(multiFireworks, 600);
+    setTimeout(multiFireworks, 2000);
+
+    // Music bar
+    document.getElementById('music-bar').style.display = 'flex';
+
+    // Extra hearts burst from cursor
+    for(let i = 0; i < 10; i++) {
+      setTimeout(() => spawnFirework(window.innerWidth/2, window.innerHeight/2), i * 120);
+    }
+  }
 </script>
-
 </body>
 </html>
