@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ankit ❤️ Ruchi</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: pink;
+      font-family: cursive;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    video {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+    }
+
+    .teddies img {
+      width: 140px;
+      margin: 10px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      background: hotpink;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    /* Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup-content {
+      background: #111;
+      padding: 25px;
+      border-radius: 20px;
+    }
+
+    #heart {
+      display: none;
+      font-size: 120px;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    #message {
+      display: none;
+      margin-top: 20px;
+      font-size: 22px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🎬 Video -->
+<video autoplay muted loop>
+  <source src="love.mp4" type="video/mp4">
+</video>
+
+<h2>Happy Valentine’s Day 💖</h2>
+
+<!-- 🧸 Teddies -->
+<div class="teddies">
+  <img src="teddy1.png">
+  <img src="teddy2.png">
+</div>
+
+<button onclick="openPopup()">Click Here 💌</button>
+
+<!-- 💬 Popup -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h2>Will you be my Valentine? 💕</h2>
+    <button onclick="yesClicked()">Yes 😍</button>
+    <button onclick="noClicked()" id="noBtn">No 🙈</button>
+  </div>
+</div>
+
+<!-- ❤️ Heart -->
+<div id="heart">❤️</div>
+
+<!-- 💌 Message -->
+<div id="message">
+  My love ❤️<br><br>
+  You make my world brighter every day.<br>
+  I promise to love you, respect you, and annoy you forever 😄💍
+</div>
+
+<!-- 🎵 Music -->
+<audio id="song" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function openPopup() {
+  document.getElementById("popup").style.display = "flex";
+}
+
+function yesClicked() {
+  document.getElementById("popup").style.display = "none";
+  document.getElementById("heart").style.display = "block";
+  document.getElementById("message").style.display = "block";
+  document.getElementById("song").play();
+}
+
+function noClicked() {
+  // Cute trick 😄
+  yesClicked();
+}
+</script>
+
+</body>
+</html>
